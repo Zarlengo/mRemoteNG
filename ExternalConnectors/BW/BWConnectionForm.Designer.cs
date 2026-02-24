@@ -31,16 +31,20 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BWConnectionForm));
             label3 = new Label();
             bwPassword = new TextBox();
-            btnOK = new Button();
             btnCancel = new Button();
             tableLayoutPanel1 = new TableLayoutPanel();
-            label5 = new Label();
+            bwUseSSO = new CheckBox();
+            bwPasswordFile = new TextBox();
+            label7 = new Label();
+            label1 = new Label();
             label4 = new Label();
             bwAccessToken = new TextBox();
             label2 = new Label();
-            label1 = new Label();
-            bwSync = new CheckBox();
+            label8 = new Label();
             tableLayoutPanel2 = new TableLayoutPanel();
+            bwSync = new CheckBox();
+            label5 = new Label();
+            btnOK = new Button();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             SuspendLayout();
@@ -49,7 +53,7 @@
             // 
             label3.AutoSize = true;
             label3.Dock = DockStyle.Fill;
-            label3.Location = new Point(5, 62);
+            label3.Location = new Point(5, 100);
             label3.Margin = new Padding(5);
             label3.Name = "label3";
             label3.Size = new Size(158, 28);
@@ -60,30 +64,18 @@
             // bwPassword
             // 
             bwPassword.Dock = DockStyle.Fill;
-            bwPassword.Location = new Point(173, 67);
+            bwPassword.Location = new Point(173, 105);
             bwPassword.Margin = new Padding(5, 10, 5, 5);
             bwPassword.Name = "bwPassword";
             bwPassword.Size = new Size(302, 23);
             bwPassword.TabIndex = 1;
             bwPassword.UseSystemPasswordChar = true;
             // 
-            // btnOK
-            // 
-            btnOK.Anchor = AnchorStyles.Right;
-            btnOK.DialogResult = DialogResult.OK;
-            btnOK.Location = new Point(136, 10);
-            btnOK.Margin = new Padding(4);
-            btnOK.Name = "btnOK";
-            btnOK.Size = new Size(88, 23);
-            btnOK.TabIndex = 4;
-            btnOK.Text = "OK";
-            btnOK.UseVisualStyleBackColor = true;
-            // 
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Left;
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(255, 10);
+            btnCancel.Location = new Point(255, 48);
             btnCancel.Margin = new Padding(4);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(88, 23);
@@ -96,47 +88,85 @@
             tableLayoutPanel1.ColumnCount = 2;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
-            tableLayoutPanel1.Controls.Add(label5, 0, 4);
+            tableLayoutPanel1.Controls.Add(bwUseSSO, 1, 1);
+            tableLayoutPanel1.Controls.Add(bwPasswordFile, 1, 4);
+            tableLayoutPanel1.Controls.Add(label7, 0, 4);
+            tableLayoutPanel1.Controls.Add(label1, 0, 1);
             tableLayoutPanel1.Controls.Add(label4, 0, 3);
             tableLayoutPanel1.Controls.Add(bwAccessToken, 1, 3);
             tableLayoutPanel1.Controls.Add(label2, 0, 0);
-            tableLayoutPanel1.Controls.Add(label1, 0, 2);
-            tableLayoutPanel1.Controls.Add(label3, 0, 1);
-            tableLayoutPanel1.Controls.Add(bwPassword, 1, 1);
-            tableLayoutPanel1.Controls.Add(bwSync, 1, 4);
+            tableLayoutPanel1.Controls.Add(label3, 0, 2);
+            tableLayoutPanel1.Controls.Add(bwPassword, 1, 2);
+            tableLayoutPanel1.Controls.Add(label8, 0, 5);
             tableLayoutPanel1.Dock = DockStyle.Top;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Margin = new Padding(4);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 5;
+            tableLayoutPanel1.RowCount = 6;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 57F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 45F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
-            tableLayoutPanel1.Size = new Size(480, 211);
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel1.Size = new Size(480, 285);
             tableLayoutPanel1.TabIndex = 1;
             // 
-            // label5
+            // bwUseSSO
             // 
-            label5.AutoSize = true;
-            label5.Dock = DockStyle.Fill;
-            label5.Location = new Point(25, 183);
-            label5.Margin = new Padding(25, 5, 5, 5);
-            label5.Name = "label5";
-            label5.Size = new Size(138, 28);
-            label5.TabIndex = 7;
-            label5.Text = "Sync on connection";
-            label5.TextAlign = ContentAlignment.MiddleLeft;
+            bwUseSSO.AutoSize = true;
+            bwUseSSO.Font = new Font("Segoe UI", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            bwUseSSO.Location = new Point(173, 60);
+            bwUseSSO.Margin = new Padding(5, 3, 3, 3);
+            bwUseSSO.Name = "bwUseSSO";
+            bwUseSSO.Size = new Size(48, 32);
+            bwUseSSO.TabIndex = 12;
+            bwUseSSO.Text = " ";
+            bwUseSSO.UseVisualStyleBackColor = true;
+            // 
+            // bwPasswordFile
+            // 
+            bwPasswordFile.Dock = DockStyle.Fill;
+            bwPasswordFile.Location = new Point(173, 181);
+            bwPasswordFile.Margin = new Padding(5, 10, 5, 5);
+            bwPasswordFile.Name = "bwPasswordFile";
+            bwPasswordFile.Size = new Size(302, 23);
+            bwPasswordFile.TabIndex = 11;
+            bwPasswordFile.UseSystemPasswordChar = true;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Dock = DockStyle.Fill;
+            label7.Location = new Point(5, 176);
+            label7.Margin = new Padding(5);
+            label7.Name = "label7";
+            label7.Size = new Size(158, 28);
+            label7.TabIndex = 9;
+            label7.Text = "Use password file";
+            label7.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Dock = DockStyle.Fill;
+            label1.Location = new Point(5, 62);
+            label1.Margin = new Padding(5);
+            label1.Name = "label1";
+            label1.Size = new Size(158, 28);
+            label1.TabIndex = 7;
+            label1.Text = "Logged in with SSO/ApiKey";
+            label1.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // label4
             // 
             label4.AutoSize = true;
             label4.Dock = DockStyle.Fill;
-            label4.Location = new Point(25, 145);
-            label4.Margin = new Padding(25, 5, 5, 5);
+            label4.Location = new Point(5, 138);
+            label4.Margin = new Padding(5);
             label4.Name = "label4";
-            label4.Size = new Size(138, 28);
+            label4.Size = new Size(158, 28);
             label4.TabIndex = 6;
             label4.Text = "Bitwarden Access Token";
             label4.TextAlign = ContentAlignment.MiddleLeft;
@@ -144,7 +174,7 @@
             // bwAccessToken
             // 
             bwAccessToken.Dock = DockStyle.Fill;
-            bwAccessToken.Location = new Point(173, 150);
+            bwAccessToken.Location = new Point(173, 143);
             bwAccessToken.Margin = new Padding(5, 10, 5, 5);
             bwAccessToken.Name = "bwAccessToken";
             bwAccessToken.Size = new Size(302, 23);
@@ -162,32 +192,19 @@
             label2.Name = "label2";
             label2.Size = new Size(470, 47);
             label2.TabIndex = 4;
-            label2.Text = "Enter password or token";
+            label2.Text = "Enter one set of credentials";
             label2.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // label1
+            // label8
             // 
-            label1.AutoSize = true;
-            tableLayoutPanel1.SetColumnSpan(label1, 2);
-            label1.Dock = DockStyle.Fill;
-            label1.Location = new Point(25, 100);
-            label1.Margin = new Padding(25, 5, 5, 5);
-            label1.Name = "label1";
-            label1.Size = new Size(450, 35);
-            label1.TabIndex = 3;
-            label1.Text = "This is used to get an access token (bw login)\r\nThe access token is then saved in the registry.";
-            label1.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // bwSync
-            // 
-            bwSync.AutoSize = true;
-            bwSync.Font = new Font("Segoe UI", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            bwSync.Location = new Point(171, 181);
-            bwSync.Name = "bwSync";
-            bwSync.Size = new Size(48, 32);
-            bwSync.TabIndex = 8;
-            bwSync.Text = " ";
-            bwSync.UseVisualStyleBackColor = true;
+            label8.AutoSize = true;
+            tableLayoutPanel1.SetColumnSpan(label8, 2);
+            label8.Location = new Point(15, 212);
+            label8.Margin = new Padding(15, 3, 3, 0);
+            label8.Name = "label8";
+            label8.Size = new Size(460, 45);
+            label8.TabIndex = 10;
+            label8.Text = "WARNING: If you use the --passwordfile option, protect your password file by locking access down to only the user who needs to run bw unlock and only providing read access to that user.";
             // 
             // tableLayoutPanel2
             // 
@@ -197,23 +214,63 @@
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 23F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 94F));
-            tableLayoutPanel2.Controls.Add(btnOK, 1, 0);
-            tableLayoutPanel2.Controls.Add(btnCancel, 3, 0);
+            tableLayoutPanel2.Controls.Add(bwSync, 2, 0);
+            tableLayoutPanel2.Controls.Add(label5, 0, 0);
+            tableLayoutPanel2.Controls.Add(btnOK, 1, 1);
+            tableLayoutPanel2.Controls.Add(btnCancel, 3, 1);
             tableLayoutPanel2.Dock = DockStyle.Bottom;
-            tableLayoutPanel2.Location = new Point(0, 218);
+            tableLayoutPanel2.Location = new Point(0, 285);
             tableLayoutPanel2.Margin = new Padding(4);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 1;
+            tableLayoutPanel2.RowCount = 2;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(480, 44);
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
+            tableLayoutPanel2.Size = new Size(480, 82);
             tableLayoutPanel2.TabIndex = 0;
+            // 
+            // bwSync
+            // 
+            bwSync.AutoSize = true;
+            bwSync.Font = new Font("Segoe UI", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            bwSync.Location = new Point(233, 3);
+            bwSync.Margin = new Padding(5, 3, 3, 3);
+            bwSync.Name = "bwSync";
+            bwSync.Size = new Size(15, 32);
+            bwSync.TabIndex = 9;
+            bwSync.Text = " ";
+            bwSync.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            tableLayoutPanel2.SetColumnSpan(label5, 2);
+            label5.Dock = DockStyle.Fill;
+            label5.Location = new Point(5, 5);
+            label5.Margin = new Padding(5);
+            label5.Name = "label5";
+            label5.Size = new Size(218, 28);
+            label5.TabIndex = 8;
+            label5.Text = "Sync on connection";
+            label5.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // btnOK
+            // 
+            btnOK.Anchor = AnchorStyles.Right;
+            btnOK.DialogResult = DialogResult.OK;
+            btnOK.Location = new Point(136, 48);
+            btnOK.Margin = new Padding(4);
+            btnOK.Name = "btnOK";
+            btnOK.Size = new Size(88, 23);
+            btnOK.TabIndex = 4;
+            btnOK.Text = "OK";
+            btnOK.UseVisualStyleBackColor = true;
             // 
             // BWConnectionForm
             // 
             AcceptButton = btnOK;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(480, 262);
+            ClientSize = new Size(480, 367);
             Controls.Add(tableLayoutPanel2);
             Controls.Add(tableLayoutPanel1);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -224,6 +281,7 @@
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
+            tableLayoutPanel2.PerformLayout();
             ResumeLayout(false);
 
         }
@@ -231,15 +289,19 @@
         #endregion
         public System.Windows.Forms.TextBox bwPassword;
         public System.Windows.Forms.TextBox bwAccessToken;
-        public System.Windows.Forms.CheckBox bwSync;
-        private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
+        private Button btnOK;
+        private Label label1;
+        public CheckBox bwSync;
+        private Label label5;
+        public TextBox bwPasswordFile;
+        private Label label7;
+        private Label label8;
+        public CheckBox bwUseSSO;
     }
 }
