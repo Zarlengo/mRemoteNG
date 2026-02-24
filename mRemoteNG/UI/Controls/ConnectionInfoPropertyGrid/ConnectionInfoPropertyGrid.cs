@@ -232,6 +232,10 @@ namespace mRemoteNG.UI.Controls.ConnectionInfoPropertyGrid {
                     && SelectedConnectionInfo.VaultOpenbaoSecretEngine != VaultOpenbaoSecretEngine.SSHOTP)
                     strHide.Add(nameof(AbstractConnectionRecord.Username));
                 strHide.Add(nameof(AbstractConnectionRecord.Password));
+            } else if (SelectedConnectionInfo.ExternalCredentialProvider == ExternalCredentialProvider.Bitwarden) {
+                strHide.Add(nameof(AbstractConnectionRecord.VaultOpenbaoSecretEngine));
+                strHide.Add(nameof(AbstractConnectionRecord.VaultOpenbaoMount));
+                strHide.Add(nameof(AbstractConnectionRecord.VaultOpenbaoRole));
             }
             return strHide;
         }

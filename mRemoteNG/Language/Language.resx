@@ -2344,6 +2344,15 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
   <data name="FileMenuWillBeHiddenNow" xml:space="preserve">
     <value>File menu is hidded now. Press Alt button to peek</value>
   </data>
+  <data name="ECPBitwarden" xml:space="preserve">
+    <value>Bitwarden</value>
+  </data>
+  <data name="ECPBitwardenReadFailed" xml:space="preserve">
+    <value>Bitwarden read failed</value>
+  </data>
+  <data name="ECPBitwardenCommandLine" xml:space="preserve">
+    <value>Bitwarden command line</value>
+  </data>
   <data name="ECPDelineaSecretServer" xml:space="preserve">
     <value>Delinea Secret Server</value>
   </data>

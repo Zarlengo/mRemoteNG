@@ -1862,6 +1862,33 @@ namespace mRemoteNG.Resources.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bitwarden.
+        /// </summary>
+        internal static string ECPBitwarden {
+            get {
+                return ResourceManager.GetString("ECPBitwarden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bitwarden command line.
+        /// </summary>
+        internal static string ECPBitwardenCommandLine {
+            get {
+                return ResourceManager.GetString("ECPBitwardenCommandLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bitwarden read failed.
+        /// </summary>
+        internal static string ECPBitwardenReadFailed {
+            get {
+                return ResourceManager.GetString("ECPBitwardenReadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clickstudios Passwordstate.
         /// </summary>
         internal static string ECPClickstudiosPasswordstate {

@@ -177,6 +177,17 @@ namespace mRemoteNG.Connection.Protocol
                                 Event_ErrorOccured(this, "Secret Server Interface Error: " + ex.Message, 0);
                             }
                         }
+                        else if (InterfaceControl.Info.ExternalCredentialProvider == ExternalCredentialProvider.Bitwarden) {
+                            try
+                            {
+                                ExternalConnectors.BW.BitwardenCli.ReadPassword($"{UserViaAPI}", out username, out password, out _, out privatekey);
+                            }
+                            catch (ExternalConnectors.BW.BitwardenCliException ex)
+                            {
+                                Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg, Language.ECPBitwardenCommandLine + ": " + ex.Arguments);
+                                Runtime.MessageCollector.AddMessage(MessageClass.ErrorMsg, Language.ECPBitwardenReadFailed + Environment.NewLine + ex.Message);
+                            }
+                        }
 
                         if (string.IsNullOrEmpty(username))
                         {

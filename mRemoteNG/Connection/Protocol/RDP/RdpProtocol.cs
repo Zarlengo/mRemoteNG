@@ -490,6 +490,19 @@ namespace mRemoteNG.Connection.Protocol.RDP
                                 Event_ErrorOccured(this, "Secret Server Interface Error: " + ex.Message, 0);
                             }
                         }
+                        else if (InterfaceControl.Info.ExternalCredentialProvider == ExternalCredentialProvider.Bitwarden)
+                        {
+                            try
+                            {
+                                string RDGUserViaAPI = InterfaceControl.Info.RDGatewayUserViaAPI;
+                                ExternalConnectors.BW.BitwardenCli.ReadPassword($"{RDGUserViaAPI}", out gwu, out gwp, out gwd, out pkey);
+                            }
+                            catch (ExternalConnectors.BW.BitwardenCliException ex)
+                            {
+                                Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg, Language.ECPBitwardenCommandLine + ": " + ex.Arguments);
+                                Runtime.MessageCollector.AddMessage(MessageClass.ErrorMsg, Language.ECPBitwardenReadFailed + Environment.NewLine + ex.Message);
+                            }
+                        }
 
 
                             if (connectionInfo.RDGatewayUseConnectionCredentials != RDGatewayUseConnectionCredentials.AccessToken)
@@ -609,6 +622,18 @@ namespace mRemoteNG.Connection.Protocol.RDP
                         ExternalConnectors.VO.VaultOpenbao.ReadPasswordRDP((int)connectionInfo.VaultOpenbaoSecretEngine, connectionInfo?.VaultOpenbaoMount ?? "", connectionInfo?.VaultOpenbaoRole ?? "", ref userName, out password);
                     } catch (ExternalConnectors.VO.VaultOpenbaoException ex) {
                         Event_ErrorOccured(this, "Secret Server Interface Error: " + ex.Message, 0);
+                    }
+                }
+                else if (InterfaceControl.Info.ExternalCredentialProvider == ExternalCredentialProvider.Bitwarden)
+                {
+                    try
+                    {
+                        ExternalConnectors.BW.BitwardenCli.ReadPassword($"{userViaApi}", out userName, out password, out domain, out pkey);
+                    }
+                    catch (ExternalConnectors.BW.BitwardenCliException ex)
+                    {
+                        Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg, Language.ECPBitwardenCommandLine + ": " + ex.Arguments);
+                        Runtime.MessageCollector.AddMessage(MessageClass.ErrorMsg, Language.ECPBitwardenReadFailed + Environment.NewLine + ex.Message);
                     }
                 }
 
