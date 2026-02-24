@@ -11,7 +11,6 @@
  * 
  * TODO:
  * - Get hostname & port from BW
- * - Read bitwarden screen on timeout
  * - login with api key                 bw login --apikey
  * - login with sso                     bw login --sso
  * - login with alias                   alias bw-personal="BITWARDENCLI_APPDATA_DIR=~/.config/Bitwarden\ CLI\ Personal /path/to/bw $@"
@@ -23,9 +22,9 @@
 
 namespace ExternalConnectors.BW;
 
-public class BitwardenCliException(string message, string arguments) : Exception(message)
+public class BitwardenCliException(string message, string? arguments = null) : Exception(message)
 {
-    public string Arguments { get; } = arguments;
+    public string Arguments { get; } = arguments ?? "";
 }
 
 public class BitwardenCli
@@ -34,19 +33,19 @@ public class BitwardenCli
     {
         if (!(Guid.TryParse(uuid, out Guid _)))
         {
-            throw new BitwardenCliException($"Error reading UserViaAPI, not in a recongnized uuid format", uuid);
+            throw new BitwardenCliException($"Error reading UserViaAPI, not in a recognized uuid format", uuid);
         }
 
-        if (!BitwardenSessionManager.TryGetValidSessionToken(out string sessionToken))
+        if (!BitwardenSessionManager.UserProvidedValidCredentials())
         {
-            Console.Out.WriteLine("Invalid session token, please login to Bitwarden CLI and try again.");
+            Console.Out.WriteLine("Invalid session, please try again.");
             username = string.Empty;
-            password = string.Empty;
-            privateKey = string.Empty;
+            password = string.Empty; 
             domain = string.Empty;
+            privateKey = string.Empty;
             return;
         }
 
-        BitwardenOperations.GetItem(uuid, sessionToken, out username, out password, out domain, out privateKey);
+        BitwardenOperations.GetItem(uuid, out username, out password, out domain, out privateKey);
     }
 }
