@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace ExternalConnectors.BW;
 
-public class BitwardenCommandRunner
+internal class BitwardenCommandRunner
 {
     private const string BitwardenCliExecutable = "bw.exe";
     private const int CommandTimeoutS = 30;

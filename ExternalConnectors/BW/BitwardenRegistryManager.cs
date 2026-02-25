@@ -2,7 +2,7 @@ using Microsoft.Win32;
 
 namespace ExternalConnectors.BW;
 
-public class BitwardenRegistryManager
+internal class BitwardenRegistryManager
 {
     private const string HKeyID = @"SOFTWARE\mRemoteNGBitwarden";
     private const string HKeyMethod = "BW_METHOD";

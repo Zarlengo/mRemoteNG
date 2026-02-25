@@ -4,8 +4,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace ExternalConnectors.BW;
-
-public class BitwardenSessionManager
+internal class BitwardenSessionManager
 {
     private static string _sessionToken = "";
 
@@ -16,48 +15,69 @@ public class BitwardenSessionManager
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public static bool UserProvidedValidCredentials()
+    public static bool LoadedCredentials()
     {
         try
         {
-            if (SessionTokenDoesNotExists())
-            {
-                if (!GetCredentaialsFromUser())
-                    return false;
-            }
-
-            if (SessionTokenIsValid())
+            // 1) Check if session token is already in memory
+            if (!string.IsNullOrEmpty(_sessionToken))
             {
                 return true;
             }
-        }
-        catch
-        {
-        }
 
+            // 2) Try to load token from registry
+            string storedToken = BitwardenRegistryManager.GetToken();
+            if (!string.IsNullOrEmpty(storedToken))
+            {
+                _sessionToken = storedToken;
+                return true;
+            }
+
+            // 3) Check if SSO/ApiKey is configured
+            string ssoValue = BitwardenRegistryManager.GetSSO();
+            if (!string.IsNullOrEmpty(ssoValue) && bool.TryParse(ssoValue, out bool useSso) && useSso)
+            {
+                try
+                {
+                    _sessionToken = BitwardenOperations.Unlock();      
+                    return SessionTokenIsValid();
+                }
+                catch (Exception ex)
+                {
+                    _sessionToken = "";
+                    NotificationBridge.ShowWarning?.Invoke($"SSO unlock failed: {ex.Message}", true);
+                }
+            }
+
+            // 4) Check if password file is configured
+            string passwordFile = BitwardenRegistryManager.GetPasswordFile();
+            if (!string.IsNullOrEmpty(passwordFile))
+            {
+                try
+                {
+                    _sessionToken = BitwardenOperations.Unlock("PasswordFile", passwordFile);   
+                    return SessionTokenIsValid();
+                }
+                catch (Exception ex)
+                {
+                    _sessionToken = "";
+                    NotificationBridge.ShowWarning?.Invoke($"Password file unlock failed: {ex.Message}", true);
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            NotificationBridge.ShowError?.Invoke($"Error loading Bitwarden credentials: {ex.Message}", true);
+            _sessionToken = "";
+        }
         return false;
     }
 
     public static string GetCurrentSessionToken() => _sessionToken;
+    public static void ClearCurrentSessionToken() { _sessionToken = ""; }
 
-    private static bool SessionTokenDoesNotExists()
-    {
-        if (!string.IsNullOrEmpty(_sessionToken))
-        {
-            return false;
-        }
-
-        string storedToken = BitwardenRegistryManager.GetToken();
-        if (!string.IsNullOrEmpty(storedToken))
-        {
-            _sessionToken = storedToken;
-            return false;
-        }
-
-        return true;
-    }
-
-    private static bool GetCredentaialsFromUser()
+    public static bool GetCredentaialsFromUser()
     {
         try
         {
@@ -71,26 +91,15 @@ public class BitwardenSessionManager
                 if (f.DialogResult != DialogResult.OK)
                     return false;
 
-                if (f.bwUseSSO.Checked)
-                {
-                    BitwardenRegistryManager.SaveSSO(f.bwUseSSO.Checked.ToString());
-                    _sessionToken = BitwardenOperations.Unlock();
-                    loopIsRunning = false;
-                }
-                else if (!string.IsNullOrEmpty(f.bwPassword.Text))
+                if (!string.IsNullOrEmpty(f.bwPassword.Text))
                 {                                                  
-                    _sessionToken = BitwardenOperations.Unlock("password", f.bwPassword.Text);
+                    _sessionToken = BitwardenOperations.Unlock("Password", f.bwPassword.Text);
                     loopIsRunning = false;
                 }
                 else if (!string.IsNullOrEmpty(f.bwAccessToken.Text))
                 {
                     _sessionToken = f.bwAccessToken.Text;
                     loopIsRunning = false;
-                }
-                else if (!string.IsNullOrEmpty(f.bwPasswordFile.Text))
-                {
-                    BitwardenRegistryManager.SavePasswordFile(f.bwPasswordFile.Text);
-                    _sessionToken = BitwardenOperations.Unlock("PasswordFile", f.bwPassword.Text);
                 }
                 else
                 {
@@ -108,7 +117,7 @@ public class BitwardenSessionManager
         {
             throw;
         }
-        return true;
+        return SessionTokenIsValid();
     }
 
     private static bool SessionTokenIsValid()
@@ -121,9 +130,10 @@ public class BitwardenSessionManager
         string status = BitwardenOperations.GetStatus();
 
         if (status != "unlocked")
-        {                                       
+        {
+            _sessionToken = "";
             BitwardenRegistryManager.DeleteToken();
-            Console.Out.WriteLine("invalid token");
+            NotificationBridge.ShowWarning?.Invoke("Bitwarden session token is invalid and has been cleared.", true);
             return false;
         }                                                  
 
@@ -132,6 +142,7 @@ public class BitwardenSessionManager
         if (currentToken != _sessionToken)
         {
             BitwardenRegistryManager.SaveToken(_sessionToken);
+            NotificationBridge.ShowInformation?.Invoke("Bitwarden session token has been updated.", true);
         }
 
         return true;

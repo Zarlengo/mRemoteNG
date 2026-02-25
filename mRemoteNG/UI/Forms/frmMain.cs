@@ -213,6 +213,13 @@ namespace mRemoteNG.UI.Forms
             MessageCollectorSetup.SetupMessageCollector(messageCollector, _messageWriters);
             MessageCollectorSetup.BuildMessageWritersFromSettings(_messageWriters);
 
+            // Initialize the notification bridge for external connectors
+            ExternalConnectors.NotificationBridge.ShowInformation = (msg, onlyLog) => messageCollector.AddMessage(Messages.MessageClass.InformationMsg, msg, onlyLog);
+            ExternalConnectors.NotificationBridge.ShowWarning = (msg, onlyLog) => messageCollector.AddMessage(Messages.MessageClass.WarningMsg, msg, onlyLog);
+            ExternalConnectors.NotificationBridge.ShowError = (msg, onlyLog) => messageCollector.AddMessage(Messages.MessageClass.ErrorMsg, msg, onlyLog);
+            ExternalConnectors.NotificationBridge.ShowDebug = (msg) => messageCollector.AddMessage(Messages.MessageClass.DebugMsg, msg, onlyLog: true);
+            ExternalConnectors.NotificationBridge.ShowException = (msg, ex, onlyLog) => messageCollector.AddExceptionMessage(msg, ex, Messages.MessageClass.ErrorMsg, onlyLog);
+
             Startup.Instance.InitializeProgram(messageCollector);
 
             SetMenuDependencies();

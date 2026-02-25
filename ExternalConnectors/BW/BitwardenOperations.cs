@@ -3,8 +3,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace ExternalConnectors.BW;
-
-public partial class BitwardenOperations
+internal partial class BitwardenOperations
 {
     private const string DomainLabel = "Domain";
     private const string SshKeyLabel = "SSHKey";
@@ -57,11 +56,12 @@ public partial class BitwardenOperations
         BitwardenCommandRunner.RunCommand(syncCommand, out _);
     }
 
-    public static string Unlock(string method = "password", string? input = null)
+    public static string Unlock(string method = "Password", string? input = null)
     {
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden unlocking.", false);
         var unlockArgs = new List<string> { "unlock" };
         var environment = new Dictionary<string, string> { };
-        if (method == "password")
+        if (method == "Password")
         {
             unlockArgs.Add("--passwordenv");
             unlockArgs.Add(PasswordEnv);
@@ -91,6 +91,13 @@ public partial class BitwardenOperations
         }
 
         return match.Groups[1].Value;
+    }        
+
+    public static void Lock()
+    {
+        var lockArgs = new List<string> { "lock" };
+
+        BitwardenCommandRunner.RunCommand(lockArgs, out string output);
     }
 
     public static string GetStatus()
