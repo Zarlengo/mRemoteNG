@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -50,10 +49,17 @@ internal partial class BitwardenOperations
         privateKey = FindField(item, SshKeyLabel);
     }
 
-    public static void Sync()
+    public static bool Sync()
     {
         var syncCommand = new List<string> { "sync", "--session", BitwardenSessionManager.GetCurrentSessionToken() };
-        BitwardenCommandRunner.RunCommand(syncCommand, out _);
+        BitwardenCommandRunner.RunCommand(syncCommand, out string response);
+        if (response == "Syncing complete.")
+        {
+            NotificationBridge.ShowInformation?.Invoke("Bitwarden sync completed successfully.", false);
+            return true;
+        }
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden sync failed.", false);
+        return false;
     }
 
     public static string Unlock(string method = "Password", string? input = null)
