@@ -20,6 +20,9 @@
  * - BW options from settings
  */
 
+using System.DirectoryServices.ActiveDirectory;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+
 namespace ExternalConnectors.BW;
 
 public class BitwardenCliException(string message, string? arguments = null) : Exception(message)
@@ -33,12 +36,13 @@ public class BitwardenCli
     {
         if (!(Guid.TryParse(uuid, out Guid _)))
         {
+            NotificationBridge.ShowError?.Invoke($"Invalid Bitwarden UUID format: {uuid}", false);
             throw new BitwardenCliException($"Error reading UserViaAPI, not in a recognized uuid format", uuid);
         }
 
-        if (!BitwardenSessionManager.UserProvidedValidCredentials())
+        if (!BitwardenSessionManager.LoadedCredentials() && !BitwardenSessionManager.GetCredentaialsFromUser())
         {
-            Console.Out.WriteLine("Invalid session, please try again.");
+            NotificationBridge.ShowWarning?.Invoke("Bitwarden session is invalid. Please re-authenticate.", false);
             username = string.Empty;
             password = string.Empty; 
             domain = string.Empty;
@@ -46,6 +50,87 @@ public class BitwardenCli
             return;
         }
 
+        NotificationBridge.ShowInformation?.Invoke("Successfully retrieved credentials from Bitwarden", true);
         BitwardenOperations.GetItem(uuid, out username, out password, out domain, out privateKey);
+    }
+
+    public static IDictionary<string, string>  GetSettings()
+    {
+        var settings = new Dictionary<string, string>
+        {
+            { "ssoEnabled", BitwardenRegistryManager.GetSSO() },
+            { "passwordFile", BitwardenRegistryManager.GetPasswordFile() }
+        };
+        return settings;
+    }
+
+    public static void UpdateSSOBoolean(bool useSSO)
+    {
+        if (useSSO)
+        {
+            BitwardenRegistryManager.SaveSSO(useSSO.ToString());
+            NotificationBridge.ShowInformation?.Invoke("Bitwarden SSO/ApiKey enabled.", false);
+            return;
+        }
+        BitwardenRegistryManager.DeleteSSO();
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden SSO/ApiKey disabled.", false);
+    }
+
+    public static void UpdatePasswordFilePath(string filePath)
+    {
+        if (string.IsNullOrEmpty(filePath))
+        {
+            BitwardenRegistryManager.DeletePasswordFile();
+            NotificationBridge.ShowInformation?.Invoke("Bitwarden password filepath deleted.", false);
+            return;
+        }
+        BitwardenRegistryManager.SavePasswordFile(filePath);
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden password filepath added.", false);
+    }
+
+    public static void ClearSessionToken()
+    {
+        BitwardenOperations.Lock();
+        BitwardenSessionManager.ClearCurrentSessionToken();
+        BitwardenRegistryManager.DeleteToken();
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden session cleared.", false);
+    }
+
+    public static bool TestConnection(out string status)
+    {
+        status = string.Empty;
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden testing connection...", false);
+
+        // Check if credentials exist
+        if (BitwardenSessionManager.LoadedCredentials())
+        {
+            status = BitwardenOperations.GetStatus();
+            return true;
+        }
+
+        // Prompt user to enter credentials
+        return BitwardenSessionManager.GetCredentaialsFromUser();
+    }
+
+    public static bool EnterCredentials()
+    {
+        return BitwardenSessionManager.GetCredentaialsFromUser();
+    }
+
+    public static string SyncVault()
+    {   
+        try
+        {
+            if (!BitwardenSessionManager.LoadedCredentials())
+            {
+                return "auth";
+            }
+            BitwardenOperations.Sync();
+            return "success";
+        }
+        catch
+        {
+        }
+        return "failure";
     }
 }

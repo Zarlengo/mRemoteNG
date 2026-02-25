@@ -1,6 +1,7 @@
-﻿#region  Usings
+#region  Usings
 using mRemoteNG.App;
 using mRemoteNG.UI.Forms.OptionsPages;
+using mRemoteNG.UI.Forms.OptionsPages.ExternalConnectors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -59,7 +60,8 @@ namespace mRemoteNG.UI.Forms
                 nameof(SecurityPage),
                 nameof(PluginsPage),
                 nameof(AdvancedPage),
-                nameof(BackupPage)
+                nameof(BackupPage),
+                nameof(ExternalConnectorsPage)
             };
 
 #if DEBUG
@@ -296,6 +298,12 @@ namespace mRemoteNG.UI.Forms
                         if (Properties.OptionsBackupPage.Default.cbBacupPageInOptionMenu ||
                             Properties.OptionsRbac.Default.ActiveRole == "AdminRole")
                             page = new BackupPage { Dock = DockStyle.Fill };
+                        break;
+                    }
+                case "ExternalConnectorsPage":
+                    {
+                        // External Connectors page is always visible (no RBAC restriction)
+                        page = new ExternalConnectorsPage { Dock = DockStyle.Fill };
                         break;
                     }
 #if DEBUG
