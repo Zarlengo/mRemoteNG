@@ -10,18 +10,14 @@
  * 6) BW credentials includes SSH key
  * 
  * TODO:
- * - Get hostname & port from BW
- * - login with api key                 bw login --apikey
- * - login with sso                     bw login --sso
+ * - test sso
  * - login with alias                   alias bw-personal="BITWARDENCLI_APPDATA_DIR=~/.config/Bitwarden\ CLI\ Personal /path/to/bw $@"
                                         alias bw-work="BITWARDENCLI_APPDATA_DIR=~/.config/Bitwarden\ CLI\ Work /path/to/bw $@"
- * - revoke session token
- * - password file                      --passwordenv <passwordenv> or --passwordfile <passwordfile>
- * - BW options from settings
+        The alias_uuid is going to be either (1) a uuid or (2) an alias:uuid which should be parsed into the two elements
+         1) 2d9223d0-14f7-492f-90a5-b3ce0124fca8
+         2) bw-personal:8b5104e3-efcc-4644-8e5d-b3ce0004f3b5
+         3) bw-work:9db2bdc1-c37a-4038-99dd-b3cc014d392e
  */
-
-using System.DirectoryServices.ActiveDirectory;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace ExternalConnectors.BW;
 
@@ -117,20 +113,12 @@ public class BitwardenCli
         return BitwardenSessionManager.GetCredentaialsFromUser();
     }
 
-    public static string SyncVault()
+    public static bool SyncVault()
     {   
-        try
+        if (!BitwardenSessionManager.LoadedCredentials())
         {
-            if (!BitwardenSessionManager.LoadedCredentials())
-            {
-                return "auth";
-            }
-            BitwardenOperations.Sync();
-            return "success";
+            return false;
         }
-        catch
-        {
-        }
-        return "failure";
+        return BitwardenOperations.Sync();
     }
 }

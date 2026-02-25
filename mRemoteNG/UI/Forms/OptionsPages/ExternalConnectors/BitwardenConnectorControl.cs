@@ -175,19 +175,19 @@ namespace mRemoteNG.UI.Forms.OptionsPages.ExternalConnectors
             {
                 try
                 {
-                    string result = BitwardenCli.SyncVault();
+                    bool sync = BitwardenCli.SyncVault();
 
                     this.Invoke((MethodInvoker)delegate
                     {
-                        if (result == "auth")
-                        {
-                            lblActionStatus.Text = ("Bitwarden session is invalid. Please re-authenticate.");
-                            lblActionStatus.ForeColor = System.Drawing.Color.Orange;
-                        }
-                        else if (result == "success")
+                        if (sync)
                         {
                             lblActionStatus.Text = "✓ Vault synced successfully!";
                             lblActionStatus.ForeColor = System.Drawing.Color.Green;
+                        }
+                        else
+                        {
+                            lblActionStatus.Text = ("Bitwarden session is invalid. Please re-authenticate.");
+                            lblActionStatus.ForeColor = System.Drawing.Color.Orange;
                         }
                     });
                 }
