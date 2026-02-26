@@ -13,6 +13,7 @@ internal class BitwardenCommandRunner
         IDictionary<string, string>? environmentVariables = null
     )
     {
+        output = string.Empty;
         var processStartInfo = new ProcessStartInfo
         {
             FileName = BitwardenCliExecutable,
@@ -25,7 +26,8 @@ internal class BitwardenCommandRunner
         foreach (var argument in arguments)
         {
             processStartInfo.ArgumentList.Add(argument);
-        }
+        }                                                
+        NotificationBridge.ShowDebug?.Invoke($"Bitwarden: Running command {ObfuscateCommand(arguments)}");
 
         if (environmentVariables != null)
         {
@@ -37,7 +39,15 @@ internal class BitwardenCommandRunner
 
         using var process = new Process();
         process.StartInfo = processStartInfo;
-        process.Start();
+        try
+        {
+            process.Start();
+        }
+        catch (System.ComponentModel.Win32Exception ex)
+        {
+            NotificationBridge.ShowError?.Invoke($"Bitwarden: Could not find or execute {BitwardenCliExecutable}. Ensure it's installed and in PATH.", false);
+            throw new BitwardenCliException($"Failed to start Bitwarden CLI: {ex.Message}");
+        }
 
         var outputTask = process.StandardOutput.ReadToEndAsync();
         var errorTask = process.StandardError.ReadToEndAsync();
@@ -54,20 +64,20 @@ internal class BitwardenCommandRunner
             {
                 // Ignore cleanup errors
             }
-            output = string.Empty;
-            throw new BitwardenCliException(
-                $"Bitwarden command timed out after {CommandTimeoutS} seconds",
-                ObfuscateCommand(arguments));
+            NotificationBridge.ShowError?.Invoke($"Bitwarden: Running command timed out after {CommandTimeoutS} seconds", false);
+            return;
         }
-
-        output = outputTask.Result;
 
         if (process.ExitCode != 0)
         {
+            NotificationBridge.ShowError?.Invoke($"Bitwarden: Running command failed with exit code {process.ExitCode}", false);
             throw new BitwardenCliException(
                 $"Bitwarden command failed: {errorTask.Result}",
                 ObfuscateCommand(arguments));
-        }
+        }               
+
+        output = outputTask.Result;
+        NotificationBridge.ShowDebug?.Invoke($"Bitwarden: Running command {ObfuscateCommand(arguments)}");
     }
 
     private static string ObfuscateCommand(IReadOnlyCollection<string> arguments)

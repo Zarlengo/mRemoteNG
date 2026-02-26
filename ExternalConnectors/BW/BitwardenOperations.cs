@@ -23,25 +23,31 @@ internal partial class BitwardenOperations
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
-
-    public static void GetItem(string uuid, out string username, out string password, out string domain, out string privateKey)
+                                                                                    errorTask.Result
+    public static void GetItem(string uuid_name, out string username, out string password, out string domain, out string privateKey)
     {
-        var getItem = new List<string> { "get", "item", uuid, "--session", BitwardenSessionManager.GetCurrentSessionToken() };
+        var getItem = new List<string> { "get", "item", uuid_name, "--session", BitwardenSessionManager.GetCurrentSessionToken() };
         BitwardenCommandRunner.RunCommand(getItem, out string output);
 
+        /*
+         * More than one result was found. Try getting a specific object by `id` instead. The following objects were found:
+         *   e8f69ca5-6192-4b12-ada2-b3db0015fbd5
+         *   13c337d0-b18d-47bc-88b9-b3db00166d60
+         *   91cf2b07-4d02-4eec-8b8d-b3db001bf52a
+         */
         var item = JsonSerializer.Deserialize<BitwardenItem>(output, JsonSerializerOptions) ??
-                    throw new BitwardenCliException("Bitwarden returned null", $"bw get item {uuid}");
+                    throw new BitwardenCliException("Bitwarden returned null", $"bw get item {uuid_name}");
 
         username = item.Login?.Username ?? string.Empty;
         if (string.IsNullOrEmpty(username))
         {
-            throw new BitwardenCliException("No username found in Bitwarden. Review field with label: Username.", $"bw get item {uuid}");
+            throw new BitwardenCliException("No username found in Bitwarden. Review field with label: Username.", $"bw get item {uuid_name}");
         }
 
         password = item.Login?.Password ?? string.Empty;
         if (string.IsNullOrEmpty(password))
         {
-            throw new BitwardenCliException("No secret found in Bitwarden. Review field with label: Password.", $"bw get item {uuid}");
+            throw new BitwardenCliException("No secret found in Bitwarden. Review field with label: Password.", $"bw get item {uuid_name}");
         }
 
         domain = FindField(item, DomainLabel);
@@ -108,6 +114,7 @@ internal partial class BitwardenOperations
 
     public static string GetStatus()
     {
+        NotificationBridge.ShowDebug?.Invoke("Bitwarden: Checking status");
         try
         {
             var arguments = new List<string> { "status", "--session", BitwardenSessionManager.GetCurrentSessionToken() };
@@ -120,7 +127,11 @@ internal partial class BitwardenOperations
         }
         catch (Exception ex)
         {
-            throw new BitwardenCliException($"Error getting status: {ex.Message}", $"bw status");
+            NotificationBridge.ShowError?.Invoke($"Error getting status: {ex.Message}", false);
+        }
+        finally
+        {
+            NotificationBridge.ShowDebug?.Invoke("Bitwarden: Status check complete");
         }
     }
 
