@@ -1,4 +1,5 @@
-﻿using ExternalConnectors.BW;
+﻿using Amazon.Runtime.Internal.Util;
+using ExternalConnectors.BW;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
@@ -21,20 +22,21 @@ namespace mRemoteNG.UI.Forms.OptionsPages.ExternalConnectors
             IDictionary<string, string> settings = BitwardenCli.GetSettings();
 
             // Load SSO checkbox state
-            if (settings.TryGetValue("ssoEnabled", out string ssoValue))
+            if (settings.TryGetValue("ssoEnabled", out string? ssoValue))
             {
                 chkUseSSO.Checked = bool.TryParse(ssoValue, out bool isSso) && isSso;
             }
 
             // Load password file path
-            if (settings.TryGetValue("passwordFile", out string passwordFile))
+            if (settings.TryGetValue("passwordFile", out string? passwordFile))
             {
-                txtPasswordFile.Text = passwordFile;
+                txtPasswordFile.Text = passwordFile ?? string.Empty;
             }
         }
 
         public void SaveSettings()
         {
+            Logger.Instance.Log?.Debug("Saving Bitwarden settings: SSO={0}, PasswordFile='{1}'", chkUseSSO.Checked, txtPasswordFile.Text);
             // SSO checkbox
             BitwardenCli.UpdateSSOBoolean(chkUseSSO.Checked);
 

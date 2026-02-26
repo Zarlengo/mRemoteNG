@@ -33,6 +33,7 @@ internal class BitwardenRegistryManager
         try
         {
             key = Registry.CurrentUser.CreateSubKey(HKeyID);
+            NotificationBridge.ShowDebug?.Invoke($"Bitwarden: Registry key {valueName} retrieved");
             return key.GetValue(valueName) as string ?? string.Empty;
         }
         finally
@@ -49,6 +50,7 @@ internal class BitwardenRegistryManager
         {
             key = Registry.CurrentUser.CreateSubKey(HKeyID);
             key.SetValue(valueName, value);
+            NotificationBridge.ShowDebug?.Invoke($"Bitwarden: Registry key {valueName} saved");
         }
         finally
         {
@@ -64,6 +66,7 @@ internal class BitwardenRegistryManager
         {
             key = Registry.CurrentUser.CreateSubKey(HKeyID);
             key.DeleteValue(valueName, throwOnMissingValue: false);
+            NotificationBridge.ShowDebug?.Invoke($"Bitwarden: Registry key {valueName} deleted");
         }
         finally
         {

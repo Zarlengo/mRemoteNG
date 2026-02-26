@@ -28,14 +28,9 @@ public class BitwardenCliException(string message, string? arguments = null) : E
 
 public class BitwardenCli
 {
-    public static void ReadPassword(string uuid, out string username, out string password, out string domain, out string privateKey)
+    public static void ReadPassword(string uuid_name, out string username, out string password, out string domain, out string privateKey)
     {
-        if (!(Guid.TryParse(uuid, out Guid _)))
-        {
-            NotificationBridge.ShowError?.Invoke($"Invalid Bitwarden UUID format: {uuid}", false);
-            throw new BitwardenCliException($"Error reading UserViaAPI, not in a recognized uuid format", uuid);
-        }
-
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden: Reading password...", true);
         if (!BitwardenSessionManager.LoadedCredentials() && !BitwardenSessionManager.GetCredentaialsFromUser())
         {
             NotificationBridge.ShowWarning?.Invoke("Bitwarden session is invalid. Please re-authenticate.", false);
@@ -47,15 +42,16 @@ public class BitwardenCli
         }
 
         NotificationBridge.ShowInformation?.Invoke("Successfully retrieved credentials from Bitwarden", true);
-        BitwardenOperations.GetItem(uuid, out username, out password, out domain, out privateKey);
+        BitwardenOperations.GetItem(uuid_name, out username, out password, out domain, out privateKey);
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden: Reading password completed", true);
     }
 
     public static IDictionary<string, string>  GetSettings()
     {
         var settings = new Dictionary<string, string>
         {
-            { "ssoEnabled", BitwardenRegistryManager.GetSSO() },
-            { "passwordFile", BitwardenRegistryManager.GetPasswordFile() }
+            { "ssoEnabled", BitwardenRegistryManager.GetSSO() ?? "false" },
+            { "passwordFile", BitwardenRegistryManager.GetPasswordFile() ?? "" }
         };
         return settings;
     }
@@ -86,6 +82,7 @@ public class BitwardenCli
 
     public static void ClearSessionToken()
     {
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden: Clearing session token...", true);
         BitwardenOperations.Lock();
         BitwardenSessionManager.ClearCurrentSessionToken();
         BitwardenRegistryManager.DeleteToken();
@@ -95,30 +92,41 @@ public class BitwardenCli
     public static bool TestConnection(out string status)
     {
         status = string.Empty;
-        NotificationBridge.ShowInformation?.Invoke("Bitwarden testing connection...", false);
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden options: Button pressed - Test connection", false);
 
         // Check if credentials exist
         if (BitwardenSessionManager.LoadedCredentials())
         {
             status = BitwardenOperations.GetStatus();
+            NotificationBridge.ShowInformation?.Invoke("Bitwarden options: Testing connection completed", true);
             return true;
         }
 
-        // Prompt user to enter credentials
-        return BitwardenSessionManager.GetCredentaialsFromUser();
+        // Prompt user to enter credentials               
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden options: No credentials loaded, prompting user", true);
+        bool getCredentials = BitwardenSessionManager.GetCredentaialsFromUser();
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden options: User prompted for credentials completed", true);
+        return getCredentials;
     }
 
     public static bool EnterCredentials()
     {
-        return BitwardenSessionManager.GetCredentaialsFromUser();
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden options: Button pressed - Enter credentials", true);
+        bool getCredentials = BitwardenSessionManager.GetCredentaialsFromUser();
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden options: Enter credentials completed", true);
+        return getCredentials;
     }
 
     public static bool SyncVault()
-    {   
+    {
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden options: Button pressed - Sync vault", true);
         if (!BitwardenSessionManager.LoadedCredentials())
         {
+            NotificationBridge.ShowInformation?.Invoke("Bitwarden: Credentials not loaded", true);
             return false;
         }
-        return BitwardenOperations.Sync();
+        bool sync = BitwardenOperations.Sync();
+        NotificationBridge.ShowInformation?.Invoke("Bitwarden options: Sync vault completed", true);
+        return sync;
     }
 }

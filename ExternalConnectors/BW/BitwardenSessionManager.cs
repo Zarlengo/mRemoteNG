@@ -19,18 +19,30 @@ internal class BitwardenSessionManager
     {
         try
         {
+            NotificationBridge.ShowDebug?.Invoke("Bitwarden: Checking for existing session...");
             // 1) Check if session token is already in memory
             if (!string.IsNullOrEmpty(_sessionToken))
             {
+                NotificationBridge.ShowDebug?.Invoke("Bitwarden: Session already exists");
                 return true;
             }
 
             // 2) Try to load token from registry
             string storedToken = BitwardenRegistryManager.GetToken();
             if (!string.IsNullOrEmpty(storedToken))
-            {
+            {                                
                 _sessionToken = storedToken;
-                return true;
+                // Check if token has expired / revoked
+                bool tokenIsValid = SessionTokenIsValid();
+                if (tokenIsValid)
+                {
+                    NotificationBridge.ShowDebug?.Invoke("Bitwarden: Valid session token loaded from registry");
+                    return true;
+                }
+                NotificationBridge.ShowWarning?.Invoke("Bitwarden: Registry token was invalid", false);
+                BitwardenRegistryManager.DeleteToken();
+                _sessionToken = "";
+                return false;
             }
 
             // 3) Check if SSO/ApiKey is configured
