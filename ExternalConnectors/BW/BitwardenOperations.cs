@@ -23,7 +23,7 @@ internal partial class BitwardenOperations
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
-                                                                                    errorTask.Result
+
     public static void GetItem(string uuid_name, out string username, out string password, out string domain, out string privateKey)
     {
         var getItem = new List<string> { "get", "item", uuid_name, "--session", BitwardenSessionManager.GetCurrentSessionToken() };
@@ -133,6 +133,7 @@ internal partial class BitwardenOperations
         {
             NotificationBridge.ShowDebug?.Invoke("Bitwarden: Status check complete");
         }
+        return string.Empty;
     }
 
     private static string FindField(BitwardenItem item, string customFieldName)

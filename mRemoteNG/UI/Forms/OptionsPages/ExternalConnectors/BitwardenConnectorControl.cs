@@ -36,7 +36,6 @@ namespace mRemoteNG.UI.Forms.OptionsPages.ExternalConnectors
 
         public void SaveSettings()
         {
-            Logger.Instance.Log?.Debug("Saving Bitwarden settings: SSO={0}, PasswordFile='{1}'", chkUseSSO.Checked, txtPasswordFile.Text);
             // SSO checkbox
             BitwardenCli.UpdateSSOBoolean(chkUseSSO.Checked);
 
